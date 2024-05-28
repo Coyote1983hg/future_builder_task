@@ -25,6 +25,7 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   final TextEditingController _zipController = TextEditingController();
   String _result = 'Noch keine PLZ gesucht';
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -33,40 +34,36 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   Future<void> getCityFromZip(String zip) async {
+    setState(() {
+      _isLoading = true;
+      _result = 'Noch keine PLZ gesucht';
+    });
+
     await Future.delayed(const Duration(seconds: 3));
 
-    switch (zip) {
-      case "10115":
-        setState(() {
+    setState(() {
+      _isLoading = false;
+      switch (zip) {
+        case "10115":
           _result = 'Berlin';
-        });
-        break;
-      case "20095":
-        setState(() {
+          break;
+        case "20095":
           _result = 'Hamburg';
-        });
-        break;
-      case "80331":
-        setState(() {
+          break;
+        case "80331":
           _result = 'München';
-        });
-        break;
-      case "50667":
-        setState(() {
+          break;
+        case "50667":
           _result = 'Köln';
-        });
-        break;
-      case "60311":
-      case "60313":
-        setState(() {
+          break;
+        case "60311":
+        case "60313":
           _result = 'Frankfurt am Main';
-        });
-        break;
-      default:
-        setState(() {
+          break;
+        default:
           _result = 'Unbekannte Stadt';
-        });
-    }
+      }
+    });
   }
 
   @override
@@ -95,10 +92,12 @@ class _MainScreenState extends State<MainScreen> {
                 child: const Text("Suche"),
               ),
               const SizedBox(height: 32),
-              Text(
-                'Ergebnis: $_result',
-                style: Theme.of(context).textTheme.labelLarge,
-              ),
+              _isLoading
+                  ? const CircularProgressIndicator()
+                  : Text(
+                      'Ergebnis: $_result',
+                      style: Theme.of(context).textTheme.labelLarge,
+                    ),
             ],
           ),
         ),
