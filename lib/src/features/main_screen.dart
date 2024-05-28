@@ -1,5 +1,20 @@
 import 'package:flutter/material.dart';
 
+void main() {
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const MaterialApp(
+      home: MainScreen(),
+    );
+  }
+}
+
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
 
@@ -8,10 +23,50 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
+  final TextEditingController _zipController = TextEditingController();
+  String _result = 'Noch keine PLZ gesucht';
+
   @override
-  void initState() {
-    super.initState();
-    // TODO: initiate controllers
+  void dispose() {
+    _zipController.dispose();
+    super.dispose();
+  }
+
+  Future<void> getCityFromZip(String zip) async {
+    await Future.delayed(const Duration(seconds: 3));
+
+    switch (zip) {
+      case "10115":
+        setState(() {
+          _result = 'Berlin';
+        });
+        break;
+      case "20095":
+        setState(() {
+          _result = 'Hamburg';
+        });
+        break;
+      case "80331":
+        setState(() {
+          _result = 'München';
+        });
+        break;
+      case "50667":
+        setState(() {
+          _result = 'Köln';
+        });
+        break;
+      case "60311":
+      case "60313":
+        setState(() {
+          _result = 'Frankfurt am Main';
+        });
+        break;
+      default:
+        setState(() {
+          _result = 'Unbekannte Stadt';
+        });
+    }
   }
 
   @override
@@ -21,52 +76,33 @@ class _MainScreenState extends State<MainScreen> {
         padding: const EdgeInsets.all(8.0),
         child: Center(
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const TextField(
-                decoration: InputDecoration(
-                    border: OutlineInputBorder(), labelText: "Postleitzahl"),
+              TextField(
+                controller: _zipController,
+                textAlign: TextAlign.center,
+                textAlignVertical: TextAlignVertical.center,
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: "Postleitzahl",
+                ),
               ),
               const SizedBox(height: 32),
               OutlinedButton(
                 onPressed: () {
-                  // TODO: implementiere Suche
+                  getCityFromZip(_zipController.text);
                 },
                 child: const Text("Suche"),
               ),
               const SizedBox(height: 32),
-              Text("Ergebnis: Noch keine PLZ gesucht",
-                  style: Theme.of(context).textTheme.labelLarge),
+              Text(
+                'Ergebnis: $_result',
+                style: Theme.of(context).textTheme.labelLarge,
+              ),
             ],
           ),
         ),
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    // TODO: dispose controllers
-    super.dispose();
-  }
-
-  Future<String> getCityFromZip(String zip) async {
-    // simuliere Dauer der Datenbank-Anfrage
-    await Future.delayed(const Duration(seconds: 3));
-
-    switch (zip) {
-      case "10115":
-        return 'Berlin';
-      case "20095":
-        return 'Hamburg';
-      case "80331":
-        return 'München';
-      case "50667":
-        return 'Köln';
-      case "60311":
-      case "60313":
-        return 'Frankfurt am Main';
-      default:
-        return 'Unbekannte Stadt';
-    }
   }
 }
